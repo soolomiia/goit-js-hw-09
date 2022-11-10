@@ -41,6 +41,7 @@ const timer = {
 
       if (ms <= 0) {
         return;
+        clearInterval(intervalId)
       }
 
       const data = this.convertMs(ms);
