@@ -40,10 +40,9 @@ const timer = {
       const ms = timerLine - Date.now();
 
       if (ms <= 0) {
-        return;
         clearInterval(intervalId)
+        return;
       }
-
       const data = this.convertMs(ms);
       this.refs.days.textContent = this.addLeadinZero(data.days);
       this.refs.hours.textContent = this.addLeadinZero(data.hours);

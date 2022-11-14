@@ -1,37 +1,41 @@
 import Notiflix from 'notiflix';
 
 const form = document.querySelector('form');
-const startButton = document.querySelector('button');
-const deley = document.querySelectorAll('input')[0];
-const step = document.querySelectorAll('input')[1];
-const amount = document.querySelectorAll('input')[2];
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-});
-
 
 function createPromise(position, delay) {
-  return new Promise(() =>{
-  const shouldResolve = Math.random() > 0.3;
-  if (shouldResolve) {
-    Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
-  } else {
-    Notiflix.Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
-  }})
-}
-
-
-function startPromis() {
-  let time = Number(deley.value);
-  let deleyTime = Number(deley.value);
-
-  for (let i = 1; i <= amount.value; i += 1) {
+  return new Promise((resolve, reject) => {
+    const shouldResolve = Math.random() > 0.3;
     setTimeout(() => {
-      createPromise(i, time);
-      time += Number(step.value);
-    }, deleyTime);
-    deleyTime += Number(step.value);
-  }
+      if (shouldResolve) {
+        resolve({ position, delay });
+      } else {
+        reject({ position, delay });
+      }
+    }, delay);
+  });
 }
-startButton.addEventListener('click', startPromis);
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  const {
+    elements: { delay, step, amount },
+  } = event.currentTarget;
+  const delayValue = Number(delay.value);
+  const stepValue = Number(step.value);
+  const amountValue = Number(amount.value);
+  for (let position = 1; position <= amountValue; position += 1) {
+    const delay = delayValue + stepValue * (position - 1);
+    createPromise(position, delay)
+      .then(({ position, delay }) => {
+        Notiflix.Notify.success(
+          `✅ Fulfilled promise ${position} in ${delay}ms`
+        );
+      })
+      .catch(({ position, delay }) => {
+        Notiflix.Notify.failure(
+          `❌ Rejected promise ${position} in ${delay}ms`
+        );
+      });
+  }
+});
+
